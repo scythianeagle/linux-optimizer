@@ -309,6 +309,8 @@ sysctl_optimizations() {
         -e '/net.ipv4.conf.all.arp_announce/d' \
         -e '/kernel.panic/d' \
         -e '/vm.dirty_ratio/d' \
+        -e '/vm.overcommit_memory/d' \
+        -e '/vm.overcommit_ratio/d' \
         -e '/^#/d' \
         -e '/^$/d' \
         "$SYS_PATH"
