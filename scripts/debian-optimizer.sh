@@ -493,6 +493,11 @@ kernel.panic = 1
 # Set dirty page ratio for virtual memory
 vm.dirty_ratio = 20
 
+# Strictly limits memory allocation to physical RAM + swap, preventing overcommit and reducing OOM risks.
+vm.overcommit_memory = 2
+
+# Sets overcommit to 100% of RAM when enabled, but ignored here since overcommit_memory = 2 disables it.
+vm.overcommit_ratio = 100
 
 ################################################################
 ################################################################
