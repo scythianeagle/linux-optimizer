@@ -1,4 +1,6 @@
 #!/bin/bash
+# https://github.com/hawshemi/Linux-Optimizer
+
 
 # Green, Yellow & Red Messages.
 green_msg() {
@@ -23,7 +25,7 @@ red_msg() {
 # Declare Paths & Settings.
 SYS_PATH="/etc/sysctl.conf"
 PROF_PATH="/etc/profile"
-SSH_PORT=""
+SSH_PORT="22"
 SSH_PATH="/etc/ssh/sshd_config"
 SWAP_PATH="/swapfile"
 SWAP_SIZE=1G
@@ -49,10 +51,10 @@ sleep 0.5
 
 # Ask Reboot
 ask_reboot() {
-    yellow_msg 'Reboot now? (RECOMMENDED) (y/n)'
+    yellow_msg 'Reboot now? (Recommended) (y/n)'
     echo 
     while true; do
-        read choice
+        read -r choice
         echo 
         if [[ "$choice" == 'y' || "$choice" == 'Y' ]]; then
             sleep 0.5
@@ -73,22 +75,39 @@ complete_update() {
     echo 
     sleep 0.5
 
-     apt -q update
-     apt -y upgrade
-     apt -y full-upgrade
-     apt -y autoremove
+    sudo apt -q update
+    sudo apt -y upgrade
+    sudo apt -y full-upgrade
+    sudo apt -y autoremove
     sleep 0.5
 
     ## Again :D
-     apt -y -q autoclean
-     apt -y clean
-     apt -q update
-     apt -y upgrade
-     apt -y full-upgrade
-     apt -y autoremove --purge
+    sudo apt -y -q autoclean
+    sudo apt -y clean
+    sudo apt -q update
+    sudo apt -y upgrade
+    sudo apt -y full-upgrade
+    sudo apt -y autoremove --purge
 
     echo 
     green_msg 'System Updated & Cleaned Successfully.'
+    echo 
+    sleep 0.5
+}
+
+
+# Disable Terminal Ads
+disable_terminal_ads() {
+    echo 
+    yellow_msg 'Disabling Terminal Ads...'
+    echo 
+    sleep 0.5
+
+    sed -i 's/ENABLED=1/ENABLED=0/g' /etc/default/motd-news
+    pro config set apt_news=false
+
+    echo 
+    green_msg 'Terminal Ads Disabled.'
     echo 
     sleep 0.5
 }
@@ -112,9 +131,9 @@ install_xanmod() {
         sleep 0.5
 
         ## Update, Upgrade & Install dependencies
-         apt update -q
-         apt upgrade -y
-         apt install wget curl gpg -y
+        sudo apt update -q
+        sudo apt upgrade -y
+        sudo apt install wget curl gpg -y
 
         ## Check the CPU level
         cpu_level=$(awk -f - <<EOF
@@ -150,20 +169,20 @@ EOF
 
             # If we reach this point, it means we have a non-empty GPG file
             # Now dearmor the GPG key and move to the final location
-             gpg --dearmor -o /usr/share/keyrings/xanmod-archive-keyring.gpg $tmp_keyring
+            sudo gpg --dearmor -o /usr/share/keyrings/xanmod-archive-keyring.gpg $tmp_keyring
 
             # Clean up the temporary file
             rm -f $tmp_keyring
 
             ## Add the XanMod repository
-            echo 'deb [signed-by=/usr/share/keyrings/xanmod-archive-keyring.gpg] http://deb.xanmod.org releases main' |  tee /etc/apt/sources.list.d/xanmod-release.list
+            echo 'deb [signed-by=/usr/share/keyrings/xanmod-archive-keyring.gpg] http://deb.xanmod.org releases main' | sudo tee /etc/apt/sources.list.d/xanmod-release.list
             
             ## Install XanMod
-             apt update -q &&  apt install "linux-xanmod-x64v$cpu_level" -y
+            sudo apt update -q && sudo apt install "linux-xanmod-x64v$cpu_level" -y
 
             ## Clean up
-             apt update -q
-             apt autoremove --purge -y
+            sudo apt update -q
+            sudo apt autoremove --purge -y
             
             echo 
             green_msg "XanMod Kernel Installed. Reboot to Apply the new Kernel."
@@ -188,8 +207,20 @@ installations() {
     sleep 0.5
 
     ## Networking packages
-     apt -q -y install apt-transport-https stunnel4 openssh-server bash-completion ca-certificates apt-utils curl nano screen net-tools unzip wget tmux nethogs git pkg-config python3 python3-pip
-   
+    sudo apt -y install apt-transport-https
+
+    ## System utilities
+    sudo apt -y install apt-utils bash-completion busybox ca-certificates cron curl gnupg2 locales lsb-release nano preload screen software-properties-common unzip wget xxd zip
+
+    ## Programming and development tools
+    sudo apt -y install autoconf automake bash-completion build-essential git libtool make pkg-config python3 python3-pip
+
+    ## Additional libraries and dependencies
+    sudo apt -y install bc binutils binutils-common binutils-x86-64-linux-gnu ubuntu-keyring haveged jq libsodium-dev libsqlite3-dev libssl-dev packagekit qrencode socat
+
+    ## Miscellaneous
+    sudo apt -y install dialog htop net-tools
+
     echo 
     green_msg 'Useful Packages Installed Succesfully.'
     echo 
@@ -198,16 +229,16 @@ installations() {
 
 
 # Enable packages at server boot
-#enable_packages() {
-#     systemctl enable cron haveged preload
-#    echo 
-#    green_msg 'Packages Enabled Succesfully.'
-#    echo
-#    sleep 0.5
-#}
+enable_packages() {
+    sudo systemctl enable cron haveged preload
+    echo 
+    green_msg 'Packages Enabled Successfully.'
+    echo
+    sleep 0.5
+}
 
 
-# Swap Maker
+## Swap Maker
 swap_maker() {
     echo 
     yellow_msg 'Making SWAP Space...'
@@ -215,11 +246,11 @@ swap_maker() {
     sleep 0.5
 
     ## Make Swap
-    fallocate -l $SWAP_SIZE $SWAP_PATH  ### Allocate size
-    chmod 600 $SWAP_PATH                ### Set proper permission
-    mkswap $SWAP_PATH                   ### Setup swap         
-    swapon $SWAP_PATH                   ### Enable swap
-    echo "$SWAP_PATH   none    swap    sw    0   0" >> /etc/fstab ### Add to fstab
+    sudo fallocate -l $SWAP_SIZE $SWAP_PATH  ## Allocate size
+    sudo chmod 600 $SWAP_PATH                ## Set proper permission
+    sudo mkswap $SWAP_PATH                   ## Setup swap         
+    sudo swapon $SWAP_PATH                   ## Enable swap
+    echo "$SWAP_PATH   none    swap    sw    0   0" >> /etc/fstab ## Add to fstab
     echo 
     green_msg 'SWAP Created Successfully.'
     echo
@@ -292,17 +323,15 @@ sysctl_optimizations() {
         -e '/net.ipv4.neigh.default.gc_stale_time/d' \
         -e '/net.ipv4.conf.default.arp_announce/d' \
         -e '/net.ipv4.conf.lo.arp_announce/d' \
-        -e '/net.ipv4.conf.all.arp_announce/d' \
+        -e '/net.ipv4.conf.all.arp_anaccept_redirectsnounce/d' \
         -e '/kernel.panic/d' \
         -e '/vm.dirty_ratio/d' \
-        -e '/vm.overcommit_memory/d' \
-        -e '/vm.overcommit_ratio/d' \
         -e '/^#/d' \
         -e '/^$/d' \
         "$SYS_PATH"
 
 
-    ## Add new parameteres. Read More: https://github.com/hawshemi/Linux-Optimizer/blob/main/files/sysctl.conf
+    ## Add new parameters. Read More: https://github.com/hawshemi/Linux-Optimizer/blob/main/files/sysctl.conf
 
 cat <<EOF >> "$SYS_PATH"
 
@@ -315,17 +344,7 @@ cat <<EOF >> "$SYS_PATH"
 # These parameters in this file will be added/updated to the sysctl.conf file.
 # Read More: https://github.com/hawshemi/Linux-Optimizer/blob/main/files/sysctl.conf
 
-
-## File system settings
-## ----------------------------------------------------------------
-
-# Set the maximum number of open file descriptors
-fs.file-max = 67108864
-
-
-## Network core settings
-## ----------------------------------------------------------------
-
+# Emam config
 net.ipv4.ip_forward = 1
 net.ipv4.conf.all.rp_filter = 1
 net.ipv4.conf.default.rp_filter = 1
@@ -344,24 +363,20 @@ net.ipv6.conf.default.accept_source_route = 0
 net.ipv6.conf.all.accept_ra = 0
 net.ipv6.conf.default.accept_ra = 0
 net.ipv4.tcp_slow_start_after_idle = 0
-
-# Enable TCP window scaling
 net.ipv4.tcp_window_scaling = 1
-
-# Enable TCP ECN
-net.ipv4.tcp_ecn = 0
-
-# Enable the use of TCP SYN cookies to help protect against SYN flood attacks
-net.ipv4.tcp_syncookies = 1
-
-
-# Define UDP memory limits
-net.ipv4.udp_mem = 65536 131072 262144
-
-
-# Define how aggressively swap memory pages are used
-vm.swappiness = 10
-
+net.core.rmem_max = 16777216
+net.core.wmem_max = 16777216
+net.ipv4.tcp_rmem = 4096 87380 16777216
+net.ipv4.tcp_wmem = 4096 65536 16777216
+net.ipv4.tcp_window_scaling = 1
+net.ipv4.tcp_timestamps = 1
+net.ipv4.tcp_sack = 1
+net.ipv4.tcp_fastopen = 3
+net.core.netdev_max_backlog = 5000
+net.ipv4.tcp_max_syn_backlog = 8192
+fs.file-max = 2097152
+net.ipv4.tcp_fin_timeout = 15
+net.ipv4.tcp_tw_reuse = 1
 
 ################################################################
 ################################################################
@@ -369,7 +384,7 @@ vm.swappiness = 10
 
 EOF
 
-    sysctl -p
+    sudo sysctl -p
     
     echo 
     green_msg 'Network is Optimized.'
@@ -385,25 +400,25 @@ find_ssh_port() {
     echo 
     
     ## Check if the SSH configuration file exists
-    if [ -e "$SSH_PATH" ]; then
+     if [ -e "$SSH_PATH" ]; then
         ## Use grep to search for the 'Port' directive in the SSH configuration file
-        SSH_PORT=$(grep -oP '^Port\s+\K\d+' "$SSH_PATH" 2>/dev/null)
+         SSH_PORT=$(grep -oP '^Port\s+\K\d+' "$SSH_PATH" 2>/dev/null)
 
-        if [ -n "$SSH_PORT" ]; then
+         if [ -n "$SSH_PORT" ]; then
             echo 
-            green_msg "SSH port found: $SSH_PORT"
-            echo 
-            sleep 0.5
-        else
+             green_msg "SSH port found: $SSH_PORT"
+             echo 
+             sleep 0.5
+         else
             echo 
             green_msg "SSH port is default 22."
             echo 
-            SSH_PORT=1899
+            SSH_PORT=22
             sleep 0.5
-        fi
-    else
-        red_msg "SSH configuration file not found at $SSH_PATH"
-    fi
+         fi
+     else
+         red_msg "SSH configuration file not found at $SSH_PATH"
+     fi
 }
 
 
@@ -433,8 +448,6 @@ remove_old_ssh_conf() {
         -e '/X11Forwarding/d' "$SSH_PATH"
 
 }
-
-
 # Update SSH config
 update_sshd_conf() {
     echo 
@@ -465,7 +478,7 @@ update_sshd_conf() {
     echo "X11Forwarding yes" | tee -a "$SSH_PATH"
 
     ## Restart the SSH service to apply the changes
-    systemctl restart ssh
+    sudo systemctl restart ssh
 
     echo 
     green_msg 'SSH is Optimized.'
@@ -545,6 +558,8 @@ limits_optimizations() {
     echo 
     sleep 0.5
 }
+    
+
 
 # Show the Menu
 show_menu() {
@@ -555,23 +570,21 @@ show_menu() {
     echo
     green_msg '2  - Install XanMod Kernel.'
     echo 
-    green_msg '3  - Complete Update + Useful Packages + Make SWAP + Optimize Network, SSH & System Limits '
-    green_msg '4  - Complete Update + Make SWAP + Optimize Network, SSH & System Limits '
+    green_msg '3  - Complete Update + Useful Packages + Make SWAP + Optimize Network, SSH & System Limits'
+    green_msg '4  - Complete Update + Make SWAP + Optimize Network, SSH & System Limits'
     green_msg '5  - Complete Update + Make SWAP + Optimize Network, SSH & System Limits'
     echo 
     green_msg '6  - Complete Update & Clean the OS.'
     green_msg '7  - Install Useful Packages.'
-    green_msg '8  - Make SWAP (2Gb).'
+    green_msg '8  - Make SWAP (1Gb).'
     green_msg '9  - Optimize the Network, SSH & System Limits.'
     echo 
     green_msg '10 - Optimize the Network settings.'
     green_msg '11 - Optimize the SSH settings.'
     green_msg '12 - Optimize the System Limits.'
     echo 
-#    green_msg '13 - Install & Optimize .'
-#    echo 
-#    red_msg 'q - Exit.'
-#    echo 
+    red_msg 'q - Exit.'
+    echo 
 }
 
 
@@ -579,7 +592,7 @@ show_menu() {
 main() {
     while true; do
         show_menu
-        read -p 'Enter Your Choice: ' choice
+        read -rp 'Enter Your Choice: ' choice
         case $choice in
         1)
             apply_everything
@@ -629,9 +642,9 @@ main() {
             limits_optimizations
             sleep 0.5
 
-#            find_ssh_port
-#            _optimizations
-#           sleep 0.5
+            find_ssh_port
+            ufw_optimizations
+            sleep 0.5
 
             echo 
             green_msg '========================='
@@ -660,7 +673,7 @@ main() {
             sleep 0.5
 
             find_ssh_port
-            ufw_optimizations
+            #ufw_optimizations
             sleep 0.5
 
             echo 
@@ -788,7 +801,17 @@ main() {
 
             ask_reboot
             ;;
+        13)
+            find_ssh_port
+            #ufw_optimizations
+            sleep 0.5
 
+            echo 
+            green_msg '========================='
+            green_msg  'Done.'
+            green_msg '========================='
+
+            ;;
         q)
             exit 0
             ;;
@@ -805,6 +828,9 @@ main() {
 apply_everything() {
 
     complete_update
+    sleep 0.5
+
+    disable_terminal_ads
     sleep 0.5
 
     install_xanmod
@@ -830,6 +856,7 @@ apply_everything() {
     sleep 0.5
     
     find_ssh_port
+    #_optimizations
     sleep 0.5
 }
 

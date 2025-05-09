@@ -127,8 +127,8 @@ fix_dns(){
 
     sed -i '/nameserver/d' $DNS_PATH
 
-    echo "nameserver 1.1.1.2" >> $DNS_PATH
-    echo "nameserver 1.0.0.2" >> $DNS_PATH
+    echo "nameserver 8.8.8.8" >> $DNS_PATH
+    echo "nameserver 1.0.0.1" >> $DNS_PATH
     echo "nameserver 127.0.0.53" >> $DNS_PATH
 
     green_msg "DNS Fixed Temporarily."
@@ -226,7 +226,7 @@ elif [[ $(grep -oP '(?<=^NAME=").*(?=")' /etc/os-release) == "Fedora Linux" ]]; 
 else
     echo 
     sleep 0.5
-    red_msg "Unknown OS, Create an issue here: https://github.com/hawshemi/Linux-Optimizer"
+    red_msg "Unknown OS, Create an issue here: https://github.com/scythianeagle/Linux-Optimizer"
     OS="unknown"
     echo 
     sleep 2
@@ -260,11 +260,11 @@ sleep 0.5
 case $OS in
 ubuntu)
     # Ubuntu
-    wget "https://raw.githubusercontent.com/hawshemi/Linux-Optimizer/main/scripts/ubuntu-optimizer.sh" -q -O ubuntu-optimizer.sh && chmod +x ubuntu-optimizer.sh && bash ubuntu-optimizer.sh 
+    wget "https://raw.githubusercontent.com/scythianeagle/Linux-Optimizer/refs/heads/main/ubuntu.sh" -O ubuntu.sh && chmod +x ubuntu.sh && bash ubuntu.sh 
     ;;
 debian)
     # Debian
-    wget "https://raw.githubusercontent.com/hawshemi/Linux-Optimizer/main/scripts/debian-optimizer.sh" -q -O debian-optimizer.sh && chmod +x debian-optimizer.sh && bash debian-optimizer.sh 
+    wget "https://raw.githubusercontent.com/scythianeagle/Linux-Optimizer/refs/heads/main/scripts/debian-optimizer.sh" -q -O debian-optimizer.sh && chmod +x debian-optimizer.sh && bash debian-optimizer.sh 
     ;;
 centos)
     # CentOS
