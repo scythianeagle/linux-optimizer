@@ -711,9 +711,9 @@ main() {
             limits_optimizations
             sleep 0.5
 
-#            find_ssh_port
-#            _optimizations
-#           sleep 0.5
+            find_ssh_port
+            _optimizations
+           sleep 0.5
 
             echo 
             green_msg '========================='
@@ -741,8 +741,8 @@ main() {
             limits_optimizations
             sleep 0.5
 
-find_ssh_port
-    sleep 0.5
+           find_ssh_port
+           sleep 0.5
 }
 
 
