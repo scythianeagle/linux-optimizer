@@ -375,10 +375,9 @@ net.ipv4.tcp_wmem = 4096 65536 16777216
 net.ipv4.tcp_window_scaling = 1
 net.ipv4.tcp_timestamps = 1
 net.ipv4.tcp_sack = 1
-net.ipv4.tcp_fastopen = 3
+net.ipv4.tcp_fastopen = 0
 net.core.netdev_max_backlog = 5000
 net.ipv4.tcp_max_syn_backlog = 8192
-fs.file-max = 2097152
 net.ipv4.tcp_fin_timeout = 15
 net.ipv4.tcp_tw_reuse = 1
 
@@ -491,79 +490,6 @@ update_sshd_conf() {
 }
 
 
-# System Limits Optimizations
-limits_optimizations() {
-    echo
-    yellow_msg 'Optimizing System Limits...'
-    echo 
-    sleep 0.5
-
-    ## Clear old ulimits
-    sed -i '/ulimit -c/d' $PROF_PATH
-    sed -i '/ulimit -d/d' $PROF_PATH
-    sed -i '/ulimit -f/d' $PROF_PATH
-    sed -i '/ulimit -i/d' $PROF_PATH
-    sed -i '/ulimit -l/d' $PROF_PATH
-    sed -i '/ulimit -m/d' $PROF_PATH
-    sed -i '/ulimit -n/d' $PROF_PATH
-    sed -i '/ulimit -q/d' $PROF_PATH
-    sed -i '/ulimit -s/d' $PROF_PATH
-    sed -i '/ulimit -t/d' $PROF_PATH
-    sed -i '/ulimit -u/d' $PROF_PATH
-    sed -i '/ulimit -v/d' $PROF_PATH
-    sed -i '/ulimit -x/d' $PROF_PATH
-    sed -i '/ulimit -s/d' $PROF_PATH
-
-
-    ## Add new ulimits
-    ## The maximum size of core files created.
-    echo "ulimit -c unlimited" | tee -a $PROF_PATH
-
-    ## The maximum size of a process's data segment
-    echo "ulimit -d unlimited" | tee -a $PROF_PATH
-
-    ## The maximum size of files created by the shell (default option)
-    echo "ulimit -f unlimited" | tee -a $PROF_PATH
-
-    ## The maximum number of pending signals
-    echo "ulimit -i unlimited" | tee -a $PROF_PATH
-
-    ## The maximum size that may be locked into memory
-    echo "ulimit -l unlimited" | tee -a $PROF_PATH
-
-    ## The maximum memory size
-    echo "ulimit -m unlimited" | tee -a $PROF_PATH
-
-    ## The maximum number of open file descriptors
-    echo "ulimit -n 1048576" | tee -a $PROF_PATH
-
-    ## The maximum POSIX message queue size
-    echo "ulimit -q unlimited" | tee -a $PROF_PATH
-
-    ## The maximum stack size
-    echo "ulimit -s -H 65536" | tee -a $PROF_PATH
-    echo "ulimit -s 32768" | tee -a $PROF_PATH
-
-    ## The maximum number of seconds to be used by each process.
-    echo "ulimit -t unlimited" | tee -a $PROF_PATH
-
-    ## The maximum number of processes available to a single user
-    echo "ulimit -u unlimited" | tee -a $PROF_PATH
-
-    ## The maximum amount of virtual memory available to the process
-    echo "ulimit -v unlimited" | tee -a $PROF_PATH
-
-    ## The maximum number of file locks
-    echo "ulimit -x unlimited" | tee -a $PROF_PATH
-
-
-    echo 
-    green_msg 'System Limits are Optimized.'
-    echo 
-    sleep 0.5
-}
-
-
 # UFW Optimizations
 # ufw_optimizations() {
 #    echo
@@ -572,7 +498,7 @@ limits_optimizations() {
 #   sleep 0.5
 
     ## Purge firewalld to install UFW.
-    sudo apt -y purge firewalld
+#    sudo apt -y purge firewalld
     
 
 
@@ -849,6 +775,114 @@ apply_everything() {
     sleep 0.5 
 
     installations
+            enable_packages
+            sleep 0.5
+
+            echo 
+            green_msg '========================='
+            green_msg  'Done.'
+            green_msg '========================='
+
+            ask_reboot
+            ;;
+        8)
+            swap_maker
+            sleep 0.5
+
+            echo 
+            green_msg '========================='
+            green_msg  'Done.'
+            green_msg '========================='
+
+            ask_reboot
+            ;;
+        9)
+            sysctl_optimizations
+            sleep 0.5
+
+            remove_old_ssh_conf
+            sleep 0.5
+
+            update_sshd_conf
+            sleep 0.5
+
+            limits_optimizations
+            sleep 0.5
+
+            echo 
+            green_msg '========================='
+            green_msg  'Done.'
+            green_msg '========================='
+
+            ask_reboot
+            ;;
+        10)
+            sysctl_optimizations
+            sleep 0.5
+
+            echo 
+            green_msg '========================='
+            green_msg  'Done.'
+            green_msg '========================='
+
+            ;;
+        11)
+            remove_old_ssh_conf
+            sleep 0.5
+
+            update_sshd_conf
+            sleep 0.5
+
+            echo 
+            green_msg '========================='
+            green_msg  'Done.'
+            green_msg '========================='
+
+            ;;
+        12)
+            limits_optimizations
+            sleep 0.5
+
+            echo 
+            green_msg '========================='
+            green_msg  'Done.'
+            green_msg '========================='
+
+            ask_reboot
+            ;;
+        13)
+            find_ssh_port
+            ufw_optimizations
+            sleep 0.5
+
+            echo 
+            green_msg '========================='
+            green_msg  'Done.'
+            green_msg '========================='
+
+            ;;
+        q)
+            exit 0
+            ;;
+
+        *)
+            red_msg 'Wrong input!'
+            ;;
+        esac
+    done
+}
+
+
+# Apply Everything
+apply_everything() {
+
+    complete_update
+    sleep 0.5
+
+    install_xanmod
+    sleep 0.5 
+
+    installations
     enable_packages
     sleep 0.5
 
@@ -874,6 +908,4 @@ apply_everything() {
 
 
 main
-
-
  
