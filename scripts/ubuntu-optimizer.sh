@@ -565,11 +565,11 @@ limits_optimizations() {
 
 
 # UFW Optimizations
-ufw_optimizations() {
-    echo
-    yellow_msg 'Installing & Optimizing UFW...'
-    echo 
-    sleep 0.5
+# ufw_optimizations() {
+#    echo
+#    yellow_msg 'Installing & Optimizing UFW...'
+#    echo 
+#   sleep 0.5
 
     ## Purge firewalld to install UFW.
     sudo apt -y purge firewalld
@@ -657,9 +657,9 @@ main() {
             limits_optimizations
             sleep 0.5
 
-            find_ssh_port
-            ufw_optimizations
-            sleep 0.5
+#            find_ssh_port
+#            ufw_optimizations
+#            sleep 0.5
 
             echo 
             green_msg '========================='
@@ -687,9 +687,9 @@ main() {
             limits_optimizations
             sleep 0.5
 
-            find_ssh_port
-            #ufw_optimizations
-            sleep 0.5
+#            find_ssh_port
+#            #ufw_optimizations
+#            sleep 0.5
 
             echo 
             green_msg '========================='
@@ -817,9 +817,9 @@ main() {
             ask_reboot
             ;;
         13)
-            find_ssh_port
-            #ufw_optimizations
-            sleep 0.5
+#            find_ssh_port
+#            #ufw_optimizations
+#            sleep 0.5
 
             echo 
             green_msg '========================='
