@@ -784,7 +784,7 @@ apply_everything() {
             green_msg '========================='
 
             ask_reboot
-            ;;
+
         8)
             swap_maker
             sleep 0.5
@@ -795,7 +795,7 @@ apply_everything() {
             green_msg '========================='
 
             ask_reboot
-            ;;
+
         9)
             sysctl_optimizations
             sleep 0.5
@@ -815,7 +815,7 @@ apply_everything() {
             green_msg '========================='
 
             ask_reboot
-            ;;
+
         10)
             sysctl_optimizations
             sleep 0.5
@@ -825,7 +825,7 @@ apply_everything() {
             green_msg  'Done.'
             green_msg '========================='
 
-            ;;
+
         11)
             remove_old_ssh_conf
             sleep 0.5
@@ -838,7 +838,7 @@ apply_everything() {
             green_msg  'Done.'
             green_msg '========================='
 
-            ;;
+
         12)
             limits_optimizations
             sleep 0.5
@@ -849,7 +849,7 @@ apply_everything() {
             green_msg '========================='
 
             ask_reboot
-            ;;
+
         13)
             find_ssh_port
             ufw_optimizations
@@ -860,14 +860,14 @@ apply_everything() {
             green_msg  'Done.'
             green_msg '========================='
 
-            ;;
+
         q)
             exit 0
-            ;;
+
 
         *)
             red_msg 'Wrong input!'
-            ;;
+
         esac
     done
 }
