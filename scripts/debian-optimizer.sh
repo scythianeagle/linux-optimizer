@@ -404,6 +404,13 @@ net.ipv6.conf.all.accept_ra = 0
 net.ipv6.conf.default.accept_ra = 0
 net.ipv4.tcp_slow_start_after_idle = 0
 
+net.ipv4.tcp_sack = 1
+net.core.default_qdisc = fq_codel
+net.ipv4.tcp_congestion_control = bbr
+vm.overcommit_memory = 1
+net.core.somaxconn = 1024
+
+
 ################################################################
 ################################################################
 
