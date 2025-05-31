@@ -487,7 +487,7 @@ update_sshd_conf() {
     sleep 0.5
 
     ## Change port
-    echo "Port 1899" | tee -a "$SSH_PATH"
+#    echo "Port 1899" | tee -a "$SSH_PATH"
 
     ## Enable TCP keep-alive messages
     echo "TCPKeepAlive yes" | tee -a "$SSH_PATH"
@@ -497,16 +497,16 @@ update_sshd_conf() {
     echo "ClientAliveCountMax 100" | tee -a "$SSH_PATH"
 
     ## Allow TCP forwarding
-    echo "AllowTcpForwarding yes" | tee -a "$SSH_PATH"
+#    echo "AllowTcpForwarding yes" | tee -a "$SSH_PATH"
 
     ## Enable gateway ports
-    echo "GatewayPorts yes" | tee -a "$SSH_PATH"
+#    echo "GatewayPorts yes" | tee -a "$SSH_PATH"
 
     ## Enable tunneling
-    echo "PermitTunnel yes" | tee -a "$SSH_PATH"
+#    echo "PermitTunnel yes" | tee -a "$SSH_PATH"
 
     ## Enable X11 graphical interface forwarding
-    echo "X11Forwarding yes" | tee -a "$SSH_PATH"
+#    echo "X11Forwarding yes" | tee -a "$SSH_PATH"
 
     ## Restart the SSH service to apply the changes
     sudo systemctl restart ssh
