@@ -611,7 +611,7 @@ main() {
 
             # find_ssh_port
             # ufw_optimizations
-            # sleep 0.5
+            ,sleep 0.5
 
             echo 
             green_msg '========================='
