@@ -210,16 +210,15 @@ installations() {
     sudo apt -y install apt-transport-https
 
     ## System utilities
-    sudo apt -y install apt-utils bash-completion busybox ca-certificates cron curl gnupg2 locales lsb-release nano preload screen software-properties-common unzip wget xxd zip
+    sudo apt -y install apt-utils ca-certificates cron curl nano screen software-properties-common unzip wget xxd zip ubuntu-keyring
 
     ## Programming and development tools
-    sudo apt -y install autoconf automake bash-completion build-essential git libtool make pkg-config python3 python3-pip
-
+    sudo apt -y install bash-completion git python3 python3-pip
     ## Additional libraries and dependencies
-    sudo apt -y install bc binutils binutils-common binutils-x86-64-linux-gnu ubuntu-keyring haveged jq libsodium-dev libsqlite3-dev libssl-dev packagekit qrencode socat
+    # sudo apt -y install bc binutils binutils-common binutils-x86-64-linux-gnu ubuntu-keyring haveged jq libsodium-dev libsqlite3-dev libssl-dev packagekit qrencode socat
 
     ## Miscellaneous
-    sudo apt -y install dialog htop net-tools
+    sudo apt -y install nethogs htop net-tools
 
     echo 
     green_msg 'Useful Packages Installed Succesfully.'
@@ -230,7 +229,7 @@ installations() {
 
 # Enable packages at server boot
 enable_packages() {
-    sudo systemctl enable cron haveged preload
+    sudo systemctl enable cron
     echo 
     green_msg 'Packages Enabled Successfully.'
     echo
@@ -374,13 +373,13 @@ net.ipv4.tcp_max_syn_backlog = 4096
 # max timewait sockets held by system simultaneously
 net.ipv4.tcp_max_tw_buckets = 5000
 # turn on TCP Fast Open on both client and server side
-net.ipv4.tcp_fastopen = 3
+net.ipv4.tcp_fastopen = 0
 # TCP receive buffer
 net.ipv4.tcp_rmem = 4096 87380 67108864
 # TCP write buffer
 net.ipv4.tcp_wmem = 4096 65536 67108864
 # turn on path MTU discovery
-net.ipv4.tcp_mtu_probing = 1
+net.ipv4.tcp_mtu_probing = 0
 
 # Emam config
 net.ipv4.ip_forward = 1
@@ -405,7 +404,6 @@ net.ipv4.tcp_slow_start_after_idle = 0
 net.ipv4.tcp_sack = 1
 net.core.default_qdisc = fq_codel
 net.ipv4.tcp_congestion_control = bbr
-vm.overcommit_memory = 1
 net.core.somaxconn = 1024
 
 
