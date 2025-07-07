@@ -459,7 +459,7 @@ find_ssh_port() {
             echo 
             green_msg "SSH port is default 22."
             echo 
-            SSH_PORT=1013
+            SSH_PORT=22
             sleep 0.5
         fi
     else
