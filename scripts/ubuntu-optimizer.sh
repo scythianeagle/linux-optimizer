@@ -446,25 +446,25 @@ find_ssh_port() {
     echo 
     
     ## Check if the SSH configuration file exists
-     if [ -e "$SSH_PATH" ]; then
+    if [ -e "$SSH_PATH" ]; then
         ## Use grep to search for the 'Port' directive in the SSH configuration file
-         SSH_PORT=$(grep -oP '^Port\s+\K\d+' "$SSH_PATH" 2>/dev/null)
+        SSH_PORT=$(grep -oP '^Port\s+\K\d+' "$SSH_PATH" 2>/dev/null)
 
-         if [ -n "$SSH_PORT" ]; then
+        if [ -n "$SSH_PORT" ]; then
             echo 
-             green_msg "SSH port found: $SSH_PORT"
-             echo 
-             sleep 0.5
-         else
+            green_msg "SSH port found: $SSH_PORT"
+            echo 
+            sleep 0.5
+        else
             echo 
             green_msg "SSH port is default 22."
             echo 
-            SSH_PORT=22
+            SSH_PORT=1013
             sleep 0.5
-         fi
-     else
-         red_msg "SSH configuration file not found at $SSH_PATH"
-     fi
+        fi
+    else
+        red_msg "SSH configuration file not found at $SSH_PATH"
+    fi
 }
 
 
@@ -494,15 +494,14 @@ remove_old_ssh_conf() {
         -e '/X11Forwarding/d' "$SSH_PATH"
 
 }
+
+
 # Update SSH config
 update_sshd_conf() {
     echo 
     yellow_msg 'Optimizing SSH...'
     echo 
     sleep 0.5
-
-    ## Change port
-#    echo "Port 1899" | tee -a "$SSH_PATH"
 
     ## Enable TCP keep-alive messages
     echo "TCPKeepAlive yes" | tee -a "$SSH_PATH"
@@ -512,22 +511,95 @@ update_sshd_conf() {
     echo "ClientAliveCountMax 100" | tee -a "$SSH_PATH"
 
     ## Allow TCP forwarding
-   # echo "AllowTcpForwarding yes" | tee -a "$SSH_PATH"
+    echo "AllowTcpForwarding yes" | tee -a "$SSH_PATH"
 
     ## Enable gateway ports
-#    echo "GatewayPorts yes" | tee -a "$SSH_PATH"
+    echo "GatewayPorts yes" | tee -a "$SSH_PATH"
 
     ## Enable tunneling
-#    echo "PermitTunnel yes" | tee -a "$SSH_PATH"
+    echo "PermitTunnel yes" | tee -a "$SSH_PATH"
 
     ## Enable X11 graphical interface forwarding
-#    echo "X11Forwarding yes" | tee -a "$SSH_PATH"
+    echo "X11Forwarding yes" | tee -a "$SSH_PATH"
 
     ## Restart the SSH service to apply the changes
     sudo systemctl restart ssh
 
     echo 
     green_msg 'SSH is Optimized.'
+    echo 
+    sleep 0.5
+}
+
+
+# System Limits Optimizations
+limits_optimizations() {
+    echo
+    yellow_msg 'Optimizing System Limits...'
+    echo 
+    sleep 0.5
+
+    ## Clear old ulimits
+    sed -i '/ulimit -c/d' $PROF_PATH
+    sed -i '/ulimit -d/d' $PROF_PATH
+    sed -i '/ulimit -f/d' $PROF_PATH
+    sed -i '/ulimit -i/d' $PROF_PATH
+    sed -i '/ulimit -l/d' $PROF_PATH
+    sed -i '/ulimit -m/d' $PROF_PATH
+    sed -i '/ulimit -n/d' $PROF_PATH
+    sed -i '/ulimit -q/d' $PROF_PATH
+    sed -i '/ulimit -s/d' $PROF_PATH
+    sed -i '/ulimit -t/d' $PROF_PATH
+    sed -i '/ulimit -u/d' $PROF_PATH
+    sed -i '/ulimit -v/d' $PROF_PATH
+    sed -i '/ulimit -x/d' $PROF_PATH
+    sed -i '/ulimit -s/d' $PROF_PATH
+
+
+    ## Add new ulimits
+    ## The maximum size of core files created.
+    echo "ulimit -c unlimited" | tee -a $PROF_PATH
+
+    ## The maximum size of a process's data segment
+    echo "ulimit -d unlimited" | tee -a $PROF_PATH
+
+    ## The maximum size of files created by the shell (default option)
+    echo "ulimit -f unlimited" | tee -a $PROF_PATH
+
+    ## The maximum number of pending signals
+    echo "ulimit -i unlimited" | tee -a $PROF_PATH
+
+    ## The maximum size that may be locked into memory
+    echo "ulimit -l unlimited" | tee -a $PROF_PATH
+
+    ## The maximum memory size
+    echo "ulimit -m unlimited" | tee -a $PROF_PATH
+
+    ## The maximum number of open file descriptors
+    echo "ulimit -n 1048576" | tee -a $PROF_PATH
+
+    ## The maximum POSIX message queue size
+    echo "ulimit -q unlimited" | tee -a $PROF_PATH
+
+    ## The maximum stack size
+    echo "ulimit -s -H 65536" | tee -a $PROF_PATH
+    echo "ulimit -s 32768" | tee -a $PROF_PATH
+
+    ## The maximum number of seconds to be used by each process.
+    echo "ulimit -t unlimited" | tee -a $PROF_PATH
+
+    ## The maximum number of processes available to a single user
+    echo "ulimit -u unlimited" | tee -a $PROF_PATH
+
+    ## The maximum amount of virtual memory available to the process
+    echo "ulimit -v unlimited" | tee -a $PROF_PATH
+
+    ## The maximum number of file locks
+    echo "ulimit -x unlimited" | tee -a $PROF_PATH
+
+
+    echo 
+    green_msg 'System Limits are Optimized.'
     echo 
     sleep 0.5
 }
@@ -846,5 +918,3 @@ apply_everything() {
 
 
 main
-
-     
