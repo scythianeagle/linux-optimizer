@@ -858,7 +858,7 @@ main() {
             ask_reboot
             ;;
         13)
-            # find_ssh_port
+            find_ssh_port
             # ufw_optimizations
             # sleep 0.5
 
@@ -911,7 +911,7 @@ apply_everything() {
     limits_optimizations
     sleep 0.5
     
-   # find_ssh_port
+   find_ssh_port
    #  ufw_optimizations
    #  sleep 0.5
 }
