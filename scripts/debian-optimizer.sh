@@ -345,66 +345,83 @@ cat <<EOF >> "$SYS_PATH"
 # These parameters in this file will be added/updated to the sysctl.conf file.
 # Read More: https://github.com/hawshemi/Linux-Optimizer/blob/main/files/sysctl.conf
 
-# max open files
-fs.file-max = 51200
-# max read buffer
-net.core.rmem_max = 67108864
-# max write buffer
-net.core.wmem_max = 67108864
-# default read buffer
-net.core.rmem_default = 65536
-# default write buffer
-net.core.wmem_default = 65536
-# max processor input queue
-net.core.netdev_max_backlog = 4096
-# max backlog
-net.core.somaxconn = 4096
-
-# resist SYN flood attacks
+net.core.rmem_max = 134217728
+net.core.wmem_max = 134217728
+net.core.rmem_default = 16777216
+net.core.wmem_default = 16777216
+net.core.netdev_max_backlog = 30000
+net.core.netdev_budget = 600
+net.core.netdev_budget_usecs = 8000
+net.core.somaxconn = 32768
+net.core.dev_weight = 128
+net.core.dev_weight_rx_bias = 1
+net.core.dev_weight_tx_bias = 1
+net.core.bpf_jit_enable = 1
+net.core.bpf_jit_kallsyms = 1
+net.core.bpf_jit_harden = 0
+net.core.flow_limit_table_len = 8192
+net.ipv4.tcp_rmem = 8192 131072 134217728
+net.ipv4.tcp_wmem = 8192 131072 134217728
+net.ipv4.tcp_fastopen = 3
+net.ipv4.tcp_fastopen_blackhole_timeout_sec = 0
+net.ipv4.tcp_fin_timeout = 10
+net.ipv4.tcp_keepalive_time = 600
+net.ipv4.tcp_keepalive_intvl = 30
+net.ipv4.tcp_keepalive_probes = 3
+net.ipv4.tcp_max_syn_backlog = 8192
+net.ipv4.tcp_max_tw_buckets = 2000000
+net.ipv4.tcp_window_scaling = 1
+net.ipv4.tcp_timestamps = 1
+net.ipv4.tcp_sack = 1
+net.ipv4.tcp_dsack = 1
+net.ipv4.tcp_fack = 1
+net.ipv4.tcp_ecn = 0
+net.ipv4.tcp_syn_retries = 3
+net.ipv4.tcp_synack_retries = 3
+net.ipv4.tcp_retries1 = 3
+net.ipv4.tcp_retries2 = 8
+net.ipv4.tcp_orphan_retries = 1
 net.ipv4.tcp_syncookies = 1
-# reuse timewait sockets when safe
-net.ipv4.tcp_tw_reuse = 1
-# short FIN timeout
-net.ipv4.tcp_fin_timeout = 30
-# short keepalive time
-net.ipv4.tcp_keepalive_time = 1200
-# max SYN backlog
-net.ipv4.tcp_max_syn_backlog = 4096
-# max timewait sockets held by system simultaneously
-net.ipv4.tcp_max_tw_buckets = 5000
-# turn on TCP Fast Open on both client and server side
-net.ipv4.tcp_fastopen = 0
-# TCP receive buffer
-net.ipv4.tcp_rmem = 4096 87380 67108864
-# TCP write buffer
-net.ipv4.tcp_wmem = 4096 65536 67108864
-# turn on path MTU discovery
-net.ipv4.tcp_mtu_probing = 0
-
-# Emam config
+net.ipv4.tcp_rfc1337 = 1
+net.ipv4.tcp_slow_start_after_idle = 0
+net.ipv4.tcp_no_metrics_save = 1
+net.ipv4.tcp_moderate_rcvbuf = 1
+# net.ipv4.tcp_mtu_probing = 2
+net.ipv4.tcp_base_mss = 1024
+net.ipv4.tcp_min_snd_mss = 48
+net.ipv4.tcp_mtu_probe_floor = 48
+net.ipv4.tcp_probe_threshold = 8
+net.ipv4.tcp_probe_interval = 600
+net.ipv4.tcp_early_retrans = 3
+net.ipv4.tcp_frto = 2
 net.ipv4.ip_forward = 1
+net.ipv4.ip_default_ttl = 64
+net.ipv4.ip_no_pmtu_disc = 0
+net.ipv4.ip_forward_use_pmtu = 1
+net.ipv4.fwmark_reflect = 1
 net.ipv4.conf.all.rp_filter = 1
 net.ipv4.conf.default.rp_filter = 1
+net.ipv4.conf.all.accept_source_route = 0
+net.ipv4.conf.default.accept_source_route = 0
 net.ipv4.conf.all.accept_redirects = 0
 net.ipv4.conf.default.accept_redirects = 0
 net.ipv4.conf.all.secure_redirects = 0
 net.ipv4.conf.default.secure_redirects = 0
-net.ipv6.conf.all.accept_redirects = 0
-net.ipv6.conf.default.accept_redirects = 0
+net.ipv4.conf.all.send_redirects = 0
 net.ipv4.conf.default.send_redirects = 0
-net.ipv4.icmp_echo_ignore_all = 1
-net.ipv4.conf.all.accept_source_route = 0
-net.ipv4.conf.default.accept_source_route = 0
-net.ipv6.conf.all.accept_source_route = 0
-net.ipv6.conf.default.accept_source_route = 0
-net.ipv6.conf.all.accept_ra = 0
-net.ipv6.conf.default.accept_ra = 0
-net.ipv4.tcp_slow_start_after_idle = 0
-
-net.ipv4.tcp_sack = 1
-net.core.default_qdisc = fq_codel
+net.ipv4.conf.all.log_martians = 0
+net.ipv4.conf.default.log_martians = 0
+net.ipv4.icmp_echo_ignore_all = 0
+net.ipv4.icmp_echo_ignore_broadcasts = 1
+net.ipv4.icmp_ignore_bogus_error_responses = 1
+net.ipv4.icmp_ratelimit = 100
+net.ipv4.icmp_ratemask = 6168
+vm.swappiness = 10
+vm.dirty_ratio = 10
+vm.dirty_background_ratio = 5
+vm.vfs_cache_pressure = 50
 net.ipv4.tcp_congestion_control = bbr
-net.core.somaxconn = 1024
+net.core.default_qdisc = fq_codel
 
 
 ################################################################
@@ -611,7 +628,7 @@ main() {
 
             # find_ssh_port
             # ufw_optimizations
-            ,sleep 0.5
+            # sleep 0.5
 
             echo 
             green_msg '========================='
@@ -766,7 +783,7 @@ main() {
             green_msg  'Done.'
             green_msg '========================='
 
-        ask_reboot
+            ask_reboot
             ;;
         13)
             # find_ssh_port
