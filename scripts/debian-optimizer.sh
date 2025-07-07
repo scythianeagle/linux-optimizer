@@ -25,7 +25,7 @@ red_msg() {
 # Declare Paths & Settings.
 SYS_PATH="/etc/sysctl.conf"
 PROF_PATH="/etc/profile"
-SSH_PORT="1013"
+SSH_PORT="1014"
 SSH_PATH="/etc/ssh/sshd_config"
 SWAP_PATH="/swapfile"
 SWAP_SIZE=1G
@@ -51,7 +51,7 @@ sleep 0.5
 
 # Ask Reboot
 ask_reboot() {
-    yellow_msg 'Reboot now? (Recommended) (y/n)'
+    yellow_msg 'Reboot now? (RECOMMENDED) (y/n)'
     echo 
     while true; do
         read choice
@@ -91,23 +91,6 @@ complete_update() {
 
     echo 
     green_msg 'System Updated & Cleaned Successfully.'
-    echo 
-    sleep 0.5
-}
-
-
-# Disable Terminal Ads
-disable_terminal_ads() {
-    echo 
-    yellow_msg 'Disabling Terminal Ads...'
-    echo 
-    sleep 0.5
-
-    sed -i 's/ENABLED=1/ENABLED=0/g' /etc/default/motd-news
-    pro config set apt_news=false
-
-    echo 
-    green_msg 'Terminal Ads Disabled.'
     echo 
     sleep 0.5
 }
@@ -207,18 +190,19 @@ installations() {
     sleep 0.5
 
     ## Networking packages
-    sudo apt -y install apt-transport-https
+    sudo apt -q -y install apt-transport-https
 
     ## System utilities
-    sudo apt -y install apt-utils ca-certificates cron curl nano screen software-properties-common unzip wget xxd zip ubuntu-keyring
+    sudo apt -q -y install apt-utils bash-completion busybox ca-certificates cron curl gnupg2 locales nano screen software-properties-common unzip wget xxd zip git python3 python3-pip
 
     ## Programming and development tools
-    sudo apt -y install bash-completion git python3 python3-pip
+#    sudo apt -q -y install autoconf automake bash-completion build-essential git libtool make pkg-config python3 python3-pip
+
     ## Additional libraries and dependencies
-    # sudo apt -y install bc binutils binutils-common binutils-x86-64-linux-gnu ubuntu-keyring haveged jq libsodium-dev libsqlite3-dev libssl-dev packagekit qrencode socat
+    sudo apt -q -y install bc binutils binutils-common binutils-x86-64-linux-gnu debian-keyring jq libsodium-dev libsqlite3-dev libssl-dev packagekit qrencode socat
 
     ## Miscellaneous
-    sudo apt -y install nethogs htop net-tools
+    sudo apt -q -y install dialog htop net-tools
 
     echo 
     green_msg 'Useful Packages Installed Succesfully.'
@@ -229,7 +213,7 @@ installations() {
 
 # Enable packages at server boot
 enable_packages() {
-    sudo systemctl enable cron
+    sudo systemctl enable cron haveged preload
     echo 
     green_msg 'Packages Enabled Successfully.'
     echo
@@ -237,7 +221,7 @@ enable_packages() {
 }
 
 
-## Swap Maker
+# Swap Maker
 swap_maker() {
     echo 
     yellow_msg 'Making SWAP Space...'
@@ -245,11 +229,11 @@ swap_maker() {
     sleep 0.5
 
     ## Make Swap
-    sudo fallocate -l $SWAP_SIZE $SWAP_PATH  ## Allocate size
-    sudo chmod 600 $SWAP_PATH                ## Set proper permission
-    sudo mkswap $SWAP_PATH                   ## Setup swap         
-    sudo swapon $SWAP_PATH                   ## Enable swap
-    echo "$SWAP_PATH   none    swap    sw    0   0" >> /etc/fstab ## Add to fstab
+    sudo fallocate -l $SWAP_SIZE $SWAP_PATH  ### Allocate size
+    sudo chmod 600 $SWAP_PATH                ### Set proper permission
+    sudo mkswap $SWAP_PATH                   ### Setup swap         
+    sudo swapon $SWAP_PATH                   ### Enable swap
+    echo "$SWAP_PATH   none    swap    sw    0   0" >> /etc/fstab ### Add to fstab
     echo 
     green_msg 'SWAP Created Successfully.'
     echo
@@ -332,7 +316,7 @@ sysctl_optimizations() {
         "$SYS_PATH"
 
 
-    ## Add new parameters. Read More: https://github.com/hawshemi/Linux-Optimizer/blob/main/files/sysctl.conf
+    ## Add new parameteres. Read More: https://github.com/hawshemi/Linux-Optimizer/blob/main/files/sysctl.conf
 
 cat <<EOF >> "$SYS_PATH"
 
@@ -353,13 +337,6 @@ net.core.netdev_max_backlog = 30000
 net.core.netdev_budget = 600
 net.core.netdev_budget_usecs = 8000
 net.core.somaxconn = 32768
-net.core.dev_weight = 128
-net.core.dev_weight_rx_bias = 1
-net.core.dev_weight_tx_bias = 1
-net.core.bpf_jit_enable = 1
-net.core.bpf_jit_kallsyms = 1
-net.core.bpf_jit_harden = 0
-net.core.flow_limit_table_len = 8192
 net.ipv4.tcp_rmem = 8192 131072 134217728
 net.ipv4.tcp_wmem = 8192 131072 134217728
 net.ipv4.tcp_fastopen = 3
@@ -423,7 +400,6 @@ vm.vfs_cache_pressure = 50
 net.ipv4.tcp_congestion_control = bbr
 net.core.default_qdisc = fq_codel
 
-
 ################################################################
 ################################################################
 
@@ -459,7 +435,7 @@ find_ssh_port() {
             echo 
             green_msg "SSH port is default 22."
             echo 
-            SSH_PORT=22
+            SSH_PORT=1013
             sleep 0.5
         fi
     else
@@ -606,15 +582,21 @@ limits_optimizations() {
 
 
 # UFW Optimizations
-# ufw_optimizations() {
-#    echo
-#    yellow_msg 'Installing & Optimizing UFW...'
-#    echo 
-#   sleep 0.5
-
-    ## Purge firewalld to install UFW.
-#    sudo apt -y purge firewalld
+ufw_optimizations() {
+    echo
+    yellow_msg 'Removing UFW...'
+    echo 
+    sleep 0.5
+    ## Disable UFW
+    sudo ufw disable
     
+    ## Purge firewalld to install UFW.
+    sudo apt -y purge ufw
+
+    ## Install UFW if it isn't installed.
+    sudo apt update -q
+    sudo apt remove -y ufw
+}
 
 
 # Show the Menu
@@ -626,18 +608,20 @@ show_menu() {
     echo
     green_msg '2  - Install XanMod Kernel.'
     echo 
-    green_msg '3  - Complete Update + Useful Packages + Make SWAP + Optimize Network, SSH & System Limits'
-    green_msg '4  - Complete Update + Make SWAP + Optimize Network, SSH & System Limits'
+    green_msg '3  - Complete Update + Useful Packages + Make SWAP + Optimize Network, SSH & System Limits + UFW'
+    green_msg '4  - Complete Update + Make SWAP + Optimize Network, SSH & System Limits + UFW'
     green_msg '5  - Complete Update + Make SWAP + Optimize Network, SSH & System Limits'
     echo 
     green_msg '6  - Complete Update & Clean the OS.'
     green_msg '7  - Install Useful Packages.'
-    green_msg '8  - Make SWAP (1Gb).'
+    green_msg '8  - Make SWAP (2Gb).'
     green_msg '9  - Optimize the Network, SSH & System Limits.'
     echo 
     green_msg '10 - Optimize the Network settings.'
     green_msg '11 - Optimize the SSH settings.'
     green_msg '12 - Optimize the System Limits.'
+    echo 
+    green_msg '13 - Install & Optimize UFW.'
     echo 
     red_msg 'q - Exit.'
     echo 
@@ -698,9 +682,9 @@ main() {
             limits_optimizations
             sleep 0.5
 
-            # find_ssh_port
-            # ufw_optimizations
-            # sleep 0.5
+            find_ssh_port
+            ufw_optimizations
+            sleep 0.5
 
             echo 
             green_msg '========================='
@@ -710,7 +694,7 @@ main() {
             ask_reboot
             ;;
         4)
-                        complete_update
+            complete_update
             sleep 0.5
 
             swap_maker
@@ -728,9 +712,9 @@ main() {
             limits_optimizations
             sleep 0.5
 
-            # find_ssh_port
-            # ufw_optimizations
-            # sleep 0.5
+            find_ssh_port
+            ufw_optimizations
+            sleep 0.5
 
             echo 
             green_msg '========================='
@@ -858,9 +842,9 @@ main() {
             ask_reboot
             ;;
         13)
-            # find_ssh_port
-            # ufw_optimizations
-            # sleep 0.5
+            find_ssh_port
+            ufw_optimizations
+            sleep 0.5
 
             echo 
             green_msg '========================='
@@ -886,9 +870,6 @@ apply_everything() {
     complete_update
     sleep 0.5
 
-    disable_terminal_ads
-    sleep 0.5
-
     install_xanmod
     sleep 0.5 
 
@@ -911,9 +892,9 @@ apply_everything() {
     limits_optimizations
     sleep 0.5
     
-   # find_ssh_port
-   #  ufw_optimizations
-   #  sleep 0.5
+    find_ssh_port
+    ufw_optimizations
+    sleep 0.5
 }
 
 
