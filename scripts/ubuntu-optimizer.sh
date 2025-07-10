@@ -199,7 +199,7 @@ installations() {
 #    sudo apt -q -y install autoconf automake bash-completion build-essential git libtool make pkg-config python3 python3-pip
 
     ## Additional libraries and dependencies
-    sudo apt -q -y install bc binutils binutils-common binutils-x86-64-linux-gnu debian-keyring jq libsodium-dev libsqlite3-dev libssl-dev packagekit qrencode socat
+#    sudo apt -q -y install bc binutils binutils-common binutils-x86-64-linux-gnu debian-keyring jq libsodium-dev libsqlite3-dev libssl-dev packagekit qrencode socat
 
     ## Miscellaneous
     sudo apt -q -y install dialog htop net-tools
@@ -213,7 +213,7 @@ installations() {
 
 # Enable packages at server boot
 enable_packages() {
-    sudo systemctl enable cron haveged preload
+    sudo systemctl enable cron
     echo 
     green_msg 'Packages Enabled Successfully.'
     echo
@@ -333,10 +333,6 @@ net.core.rmem_max = 134217728
 net.core.wmem_max = 134217728
 net.core.rmem_default = 16777216
 net.core.wmem_default = 16777216
-net.core.netdev_max_backlog = 30000
-net.core.netdev_budget = 600
-net.core.netdev_budget_usecs = 8000
-net.core.somaxconn = 32768
 net.ipv4.tcp_rmem = 8192 131072 134217728
 net.ipv4.tcp_wmem = 8192 131072 134217728
 net.ipv4.tcp_fastopen = 3
@@ -363,9 +359,7 @@ net.ipv4.tcp_rfc1337 = 1
 net.ipv4.tcp_slow_start_after_idle = 0
 net.ipv4.tcp_no_metrics_save = 1
 net.ipv4.tcp_moderate_rcvbuf = 1
-# net.ipv4.tcp_mtu_probing = 2
-net.ipv4.tcp_base_mss = 1024
-net.ipv4.tcp_min_snd_mss = 48
+# net.ipv4.tcp_mtu_probing = 0
 net.ipv4.tcp_mtu_probe_floor = 48
 net.ipv4.tcp_probe_threshold = 8
 net.ipv4.tcp_probe_interval = 600
