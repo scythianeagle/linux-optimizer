@@ -25,7 +25,7 @@ red_msg() {
 # Declare Paths & Settings.
 SYS_PATH="/etc/sysctl.conf"
 PROF_PATH="/etc/profile"
-SSH_PORT=""
+SSH_PORT="1013"
 SSH_PATH="/etc/ssh/sshd_config"
 SWAP_PATH="/swapfile"
 SWAP_SIZE=1G
