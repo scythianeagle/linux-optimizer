@@ -193,16 +193,13 @@ installations() {
     sudo apt -q -y install apt-transport-https
 
     ## System utilities
-    sudo apt -q -y install apt-utils bash-completion busybox ca-certificates cron curl gnupg2 locales nano screen software-properties-common unzip wget xxd zip git python3 python3-pip
+    sudo apt -q -y install apt-utils bash-completion ca-certificates cron curl nano screen software-properties-common unzip wget zip git net-tools
 
     ## Programming and development tools
 #    sudo apt -q -y install autoconf automake bash-completion build-essential git libtool make pkg-config python3 python3-pip
 
     ## Additional libraries and dependencies
-    sudo apt -q -y install bc binutils binutils-common binutils-x86-64-linux-gnu debian-keyring jq libsodium-dev libsqlite3-dev libssl-dev packagekit qrencode socat
-
-    ## Miscellaneous
-    sudo apt -q -y install dialog htop net-tools
+#    sudo apt -q -y install bc binutils binutils-common binutils-x86-64-linux-gnu debian-keyring jq libsodium-dev libsqlite3-dev libssl-dev packagekit qrencode socat
 
     echo 
     green_msg 'Useful Packages Installed Succesfully.'
@@ -213,7 +210,7 @@ installations() {
 
 # Enable packages at server boot
 enable_packages() {
-    sudo systemctl enable cron haveged preload
+    sudo systemctl enable cron
     echo 
     green_msg 'Packages Enabled Successfully.'
     echo
@@ -329,74 +326,67 @@ cat <<EOF >> "$SYS_PATH"
 # These parameters in this file will be added/updated to the sysctl.conf file.
 # Read More: https://github.com/hawshemi/Linux-Optimizer/blob/main/files/sysctl.conf
 
-net.core.rmem_max = 134217728
-net.core.wmem_max = 134217728
-net.core.rmem_default = 16777216
-net.core.wmem_default = 16777216
-net.core.netdev_max_backlog = 30000
-net.core.netdev_budget = 600
-net.core.netdev_budget_usecs = 8000
-net.core.somaxconn = 32768
-net.ipv4.tcp_rmem = 8192 131072 134217728
-net.ipv4.tcp_wmem = 8192 131072 134217728
-net.ipv4.tcp_fastopen = 3
-net.ipv4.tcp_fastopen_blackhole_timeout_sec = 0
-net.ipv4.tcp_fin_timeout = 10
-net.ipv4.tcp_keepalive_time = 600
+fs.file-max = 67108864
+net.core.netdev_max_backlog = 32768
+net.core.optmem_max = 262144
+net.core.somaxconn = 65536
+net.core.rmem_max = 33554432
+net.core.rmem_default = 1048576
+net.core.wmem_max = 33554432
+net.core.wmem_default = 1048576
+net.ipv4.ipfrag_high_thresh = 524288
+net.ipv4.ipfrag_low_thresh = 446464
+net.ipv4.ipfrag_time = 60
+vm.dirty_background_ratio = 5
+vm.dirty_expire_centisecs = 3000
+vm.dirty_writeback_centisecs = 500
+net.ipv4.tcp_rmem = 16384 1048576 33554432
+net.ipv4.tcp_wmem = 16384 1048576 33554432
+net.ipv4.tcp_fin_timeout = 25
+net.ipv4.tcp_keepalive_time = 1200
+net.ipv4.tcp_keepalive_probes = 7
 net.ipv4.tcp_keepalive_intvl = 30
-net.ipv4.tcp_keepalive_probes = 3
-net.ipv4.tcp_max_syn_backlog = 8192
-net.ipv4.tcp_max_tw_buckets = 2000000
-net.ipv4.tcp_window_scaling = 1
-net.ipv4.tcp_timestamps = 1
+net.ipv4.tcp_max_orphans = 819200
+net.ipv4.tcp_max_syn_backlog = 20480
+net.ipv4.tcp_max_tw_buckets = 1440000
+net.ipv4.tcp_mem = 65536 1048576 33554432
+# net.ipv4.tcp_mtu_probing = 1
+net.ipv4.tcp_notsent_lowat = 32768
+net.ipv4.tcp_retries1 = 3
+net.ipv4.tcp_retries2 = 5
+net.ipv4.tcp_fastopen = 3
 net.ipv4.tcp_sack = 1
 net.ipv4.tcp_dsack = 1
-net.ipv4.tcp_fack = 1
-net.ipv4.tcp_ecn = 0
-net.ipv4.tcp_syn_retries = 3
-net.ipv4.tcp_synack_retries = 3
-net.ipv4.tcp_retries1 = 3
-net.ipv4.tcp_retries2 = 8
-net.ipv4.tcp_orphan_retries = 1
-net.ipv4.tcp_syncookies = 1
-net.ipv4.tcp_rfc1337 = 1
 net.ipv4.tcp_slow_start_after_idle = 0
-net.ipv4.tcp_no_metrics_save = 1
-net.ipv4.tcp_moderate_rcvbuf = 1
-# net.ipv4.tcp_mtu_probing = 2
-net.ipv4.tcp_base_mss = 1024
-net.ipv4.tcp_min_snd_mss = 48
-net.ipv4.tcp_mtu_probe_floor = 48
-net.ipv4.tcp_probe_threshold = 8
-net.ipv4.tcp_probe_interval = 600
-net.ipv4.tcp_early_retrans = 3
-net.ipv4.tcp_frto = 2
+net.ipv4.tcp_window_scaling = 1
+net.ipv4.tcp_adv_win_scale = 0
+net.ipv4.tcp_ecn = 0
+net.ipv4.tcp_ecn_fallback = 1
+net.ipv4.tcp_syncookies = 1
+net.ipv4.udp_mem = 65536 1048576 33554432
+net.ipv6.conf.all.disable_ipv6 = 0
+net.ipv6.conf.default.disable_ipv6 = 0
+net.ipv6.conf.lo.disable_ipv6 = 0
+net.unix.max_dgram_qlen = 256
+vm.min_free_kbytes = 65536
 net.ipv4.ip_forward = 1
-net.ipv4.ip_default_ttl = 64
-net.ipv4.ip_no_pmtu_disc = 0
-net.ipv4.ip_forward_use_pmtu = 1
-net.ipv4.fwmark_reflect = 1
 net.ipv4.conf.all.rp_filter = 1
 net.ipv4.conf.default.rp_filter = 1
-net.ipv4.conf.all.accept_source_route = 0
-net.ipv4.conf.default.accept_source_route = 0
 net.ipv4.conf.all.accept_redirects = 0
 net.ipv4.conf.default.accept_redirects = 0
 net.ipv4.conf.all.secure_redirects = 0
 net.ipv4.conf.default.secure_redirects = 0
-net.ipv4.conf.all.send_redirects = 0
+net.ipv6.conf.all.accept_redirects = 0
+net.ipv6.conf.default.accept_redirects = 0
 net.ipv4.conf.default.send_redirects = 0
-net.ipv4.conf.all.log_martians = 0
-net.ipv4.conf.default.log_martians = 0
-net.ipv4.icmp_echo_ignore_all = 0
-net.ipv4.icmp_echo_ignore_broadcasts = 1
-net.ipv4.icmp_ignore_bogus_error_responses = 1
-net.ipv4.icmp_ratelimit = 100
-net.ipv4.icmp_ratemask = 6168
-vm.swappiness = 10
-vm.dirty_ratio = 10
-vm.dirty_background_ratio = 5
-vm.vfs_cache_pressure = 50
+net.ipv4.icmp_echo_ignore_all = 1
+net.ipv4.conf.all.accept_source_route = 0
+net.ipv4.conf.default.accept_source_route = 0
+net.ipv6.conf.all.accept_source_route = 0
+net.ipv6.conf.default.accept_source_route = 0
+net.ipv6.conf.all.accept_ra = 0
+net.ipv6.conf.default.accept_ra = 0
+net.ipv4.tcp_slow_start_after_idle = 0
 net.ipv4.tcp_congestion_control = bbr
 net.core.default_qdisc = fq_codel
 
@@ -415,171 +405,7 @@ EOF
 }
 
 
-# Function to find the SSH port and set it in the SSH_PORT variable
-find_ssh_port() {
-    echo 
-    yellow_msg "Finding SSH port..."
-    echo 
-    
-    ## Check if the SSH configuration file exists
-    if [ -e "$SSH_PATH" ]; then
-        ## Use grep to search for the 'Port' directive in the SSH configuration file
-        SSH_PORT=$(grep -oP '^Port\s+\K\d+' "$SSH_PATH" 2>/dev/null)
-
-        if [ -n "$SSH_PORT" ]; then
-            echo 
-            green_msg "SSH port found: $SSH_PORT"
-            echo 
-            sleep 0.5
-        else
-            echo 
-            green_msg "SSH port is default 1013."
-            echo 
-            SSH_PORT=1013
-            sleep 0.5
-        fi
-    else
-        red_msg "SSH configuration file not found at $SSH_PATH"
-    fi
-}
-
-
-# Remove old SSH config to prevent duplicates.
-remove_old_ssh_conf() {
-    ## Make a backup of the original sshd_config file
-    cp $SSH_PATH /etc/ssh/sshd_config.bak
-
-    echo 
-    yellow_msg 'Default SSH Config file Saved. Directory: /etc/ssh/sshd_config.bak'
-    echo 
-    sleep 1
-
-    ## Remove these lines
-    sed -i -e 's/#UseDNS yes/UseDNS no/' \
-        -e 's/#Compression no/Compression yes/' \
-        -e 's/Ciphers .*/Ciphers aes256-ctr,chacha20-poly1305@openssh.com/' \
-        -e '/MaxAuthTries/d' \
-        -e '/MaxSessions/d' \
-        -e '/TCPKeepAlive/d' \
-        -e '/ClientAliveInterval/d' \
-        -e '/ClientAliveCountMax/d' \
-        -e '/AllowAgentForwarding/d' \
-        -e '/AllowTcpForwarding/d' \
-        -e '/GatewayPorts/d' \
-        -e '/PermitTunnel/d' \
-        -e '/X11Forwarding/d' "$SSH_PATH"
-
-}
-
-
-# Update SSH config
-update_sshd_conf() {
-    echo 
-    yellow_msg 'Optimizing SSH...'
-    echo 
-    sleep 0.5
-
-    ## Enable TCP keep-alive messages
-    echo "TCPKeepAlive yes" | tee -a "$SSH_PATH"
-
-    ## Configure client keep-alive messages
-    echo "ClientAliveInterval 3000" | tee -a "$SSH_PATH"
-    echo "ClientAliveCountMax 100" | tee -a "$SSH_PATH"
-
-    ## Allow TCP forwarding
-    echo "AllowTcpForwarding yes" | tee -a "$SSH_PATH"
-
-    ## Enable gateway ports
-    echo "GatewayPorts yes" | tee -a "$SSH_PATH"
-
-    ## Enable tunneling
-    echo "PermitTunnel yes" | tee -a "$SSH_PATH"
-
-    ## Enable X11 graphical interface forwarding
-    echo "X11Forwarding yes" | tee -a "$SSH_PATH"
-
-    ## Restart the SSH service to apply the changes
-    sudo systemctl restart ssh
-
-    echo 
-    green_msg 'SSH is Optimized.'
-    echo 
-    sleep 0.5
-}
-
-
-# System Limits Optimizations
-limits_optimizations() {
-    echo
-    yellow_msg 'Optimizing System Limits...'
-    echo 
-    sleep 0.5
-
-    ## Clear old ulimits
-    sed -i '/ulimit -c/d' $PROF_PATH
-    sed -i '/ulimit -d/d' $PROF_PATH
-    sed -i '/ulimit -f/d' $PROF_PATH
-    sed -i '/ulimit -i/d' $PROF_PATH
-    sed -i '/ulimit -l/d' $PROF_PATH
-    sed -i '/ulimit -m/d' $PROF_PATH
-    sed -i '/ulimit -n/d' $PROF_PATH
-    sed -i '/ulimit -q/d' $PROF_PATH
-    sed -i '/ulimit -s/d' $PROF_PATH
-    sed -i '/ulimit -t/d' $PROF_PATH
-    sed -i '/ulimit -u/d' $PROF_PATH
-    sed -i '/ulimit -v/d' $PROF_PATH
-    sed -i '/ulimit -x/d' $PROF_PATH
-    sed -i '/ulimit -s/d' $PROF_PATH
-
-
-    ## Add new ulimits
-    ## The maximum size of core files created.
-    echo "ulimit -c unlimited" | tee -a $PROF_PATH
-
-    ## The maximum size of a process's data segment
-    echo "ulimit -d unlimited" | tee -a $PROF_PATH
-
-    ## The maximum size of files created by the shell (default option)
-    echo "ulimit -f unlimited" | tee -a $PROF_PATH
-
-    ## The maximum number of pending signals
-    echo "ulimit -i unlimited" | tee -a $PROF_PATH
-
-    ## The maximum size that may be locked into memory
-    echo "ulimit -l unlimited" | tee -a $PROF_PATH
-
-    ## The maximum memory size
-    echo "ulimit -m unlimited" | tee -a $PROF_PATH
-
-    ## The maximum number of open file descriptors
-    echo "ulimit -n 1048576" | tee -a $PROF_PATH
-
-    ## The maximum POSIX message queue size
-    echo "ulimit -q unlimited" | tee -a $PROF_PATH
-
-    ## The maximum stack size
-    echo "ulimit -s -H 65536" | tee -a $PROF_PATH
-    echo "ulimit -s 32768" | tee -a $PROF_PATH
-
-    ## The maximum number of seconds to be used by each process.
-    echo "ulimit -t unlimited" | tee -a $PROF_PATH
-
-    ## The maximum number of processes available to a single user
-    echo "ulimit -u unlimited" | tee -a $PROF_PATH
-
-    ## The maximum amount of virtual memory available to the process
-    echo "ulimit -v unlimited" | tee -a $PROF_PATH
-
-    ## The maximum number of file locks
-    echo "ulimit -x unlimited" | tee -a $PROF_PATH
-
-
-    echo 
-    green_msg 'System Limits are Optimized.'
-    echo 
-    sleep 0.5
-}
-
+# 
 
 # UFW Optimizations
 ufw_optimizations() {
@@ -618,11 +444,6 @@ show_menu() {
     green_msg '9  - Optimize the Network, SSH & System Limits.'
     echo 
     green_msg '10 - Optimize the Network settings.'
-    green_msg '11 - Optimize the SSH settings.'
-    green_msg '12 - Optimize the System Limits.'
-    echo 
-    green_msg '13 - Install & Optimize UFW.'
-    echo 
     red_msg 'q - Exit.'
     echo 
 }
@@ -672,27 +493,11 @@ main() {
 
             sysctl_optimizations
             sleep 0.5
-
-            remove_old_ssh_conf
-            sleep 0.5
-
-            update_sshd_conf
-            sleep 0.5
-
-            limits_optimizations
-            sleep 0.5
-
-            find_ssh_port
-            ufw_optimizations
-            sleep 0.5
-
-            echo 
-            green_msg '========================='
-            green_msg  'Done.'
-            green_msg '========================='
-
+            
             ask_reboot
+            
             ;;
+            
         4)
             complete_update
             sleep 0.5
@@ -702,19 +507,7 @@ main() {
 
             sysctl_optimizations
             sleep 0.5
-
-            remove_old_ssh_conf
-            sleep 0.5
-
-            update_sshd_conf
-            sleep 0.5
-
-            limits_optimizations
-            sleep 0.5
-
-            find_ssh_port
-            ufw_optimizations
-            sleep 0.5
+          
 
             echo 
             green_msg '========================='
@@ -731,15 +524,6 @@ main() {
             sleep 0.5
 
             sysctl_optimizations
-            sleep 0.5
-
-            remove_old_ssh_conf
-            sleep 0.5
-
-            update_sshd_conf
-            sleep 0.5
-
-            limits_optimizations
             sleep 0.5
 
             echo 
@@ -790,16 +574,7 @@ main() {
         9)
             sysctl_optimizations
             sleep 0.5
-
-            remove_old_ssh_conf
-            sleep 0.5
-
-            update_sshd_conf
-            sleep 0.5
-
-            limits_optimizations
-            sleep 0.5
-
+            
             echo 
             green_msg '========================='
             green_msg  'Done.'
@@ -809,41 +584,6 @@ main() {
             ;;
         10)
             sysctl_optimizations
-            sleep 0.5
-
-            echo 
-            green_msg '========================='
-            green_msg  'Done.'
-            green_msg '========================='
-
-            ;;
-        11)
-            remove_old_ssh_conf
-            sleep 0.5
-
-            update_sshd_conf
-            sleep 0.5
-
-            echo 
-            green_msg '========================='
-            green_msg  'Done.'
-            green_msg '========================='
-
-            ;;
-        12)
-            limits_optimizations
-            sleep 0.5
-
-            echo 
-            green_msg '========================='
-            green_msg  'Done.'
-            green_msg '========================='
-
-            ask_reboot
-            ;;
-        13)
-            find_ssh_port
-            ufw_optimizations
             sleep 0.5
 
             echo 
