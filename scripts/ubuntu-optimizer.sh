@@ -193,16 +193,13 @@ installations() {
     sudo apt -q -y install apt-transport-https
 
     ## System utilities
-    sudo apt -q -y install apt-utils bash-completion busybox ca-certificates cron curl gnupg2 locales nano screen software-properties-common unzip wget xxd zip git python3 python3-pip
+    sudo apt -q -y install apt-utils bash-completion ca-certificates cron curl nano screen software-properties-common unzip wget zip git net-tools
 
     ## Programming and development tools
 #    sudo apt -q -y install autoconf automake bash-completion build-essential git libtool make pkg-config python3 python3-pip
 
     ## Additional libraries and dependencies
 #    sudo apt -q -y install bc binutils binutils-common binutils-x86-64-linux-gnu debian-keyring jq libsodium-dev libsqlite3-dev libssl-dev packagekit qrencode socat
-
-    ## Miscellaneous
-    sudo apt -q -y install dialog htop net-tools
 
     echo 
     green_msg 'Useful Packages Installed Succesfully.'
@@ -408,171 +405,7 @@ EOF
 }
 
 
-# Function to find the SSH port and set it in the SSH_PORT variable
-find_ssh_port() {
-    echo 
-    yellow_msg "Finding SSH port..."
-    echo 
-    
-    ## Check if the SSH configuration file exists
-    if [ -e "$SSH_PATH" ]; then
-        ## Use grep to search for the 'Port' directive in the SSH configuration file
-        SSH_PORT=$(grep -oP '^Port\s+\K\d+' "$SSH_PATH" 2>/dev/null)
-
-        if [ -n "$SSH_PORT" ]; then
-            echo 
-            green_msg "SSH port found: $SSH_PORT"
-            echo 
-            sleep 0.5
-        else
-            echo 
-            green_msg "SSH port is default 1013."
-            echo 
-            SSH_PORT=1013
-            sleep 0.5
-        fi
-    else
-        red_msg "SSH configuration file not found at $SSH_PATH"
-    fi
-}
-
-
-# Remove old SSH config to prevent duplicates.
-remove_old_ssh_conf() {
-    ## Make a backup of the original sshd_config file
-    cp $SSH_PATH /etc/ssh/sshd_config.bak
-
-    echo 
-    yellow_msg 'Default SSH Config file Saved. Directory: /etc/ssh/sshd_config.bak'
-    echo 
-    sleep 1
-
-    ## Remove these lines
-    sed -i -e 's/#UseDNS yes/UseDNS no/' \
-        -e 's/#Compression no/Compression yes/' \
-        -e 's/Ciphers .*/Ciphers aes256-ctr,chacha20-poly1305@openssh.com/' \
-        -e '/MaxAuthTries/d' \
-        -e '/MaxSessions/d' \
-        -e '/TCPKeepAlive/d' \
-        -e '/ClientAliveInterval/d' \
-        -e '/ClientAliveCountMax/d' \
-        -e '/AllowAgentForwarding/d' \
-        -e '/AllowTcpForwarding/d' \
-        -e '/GatewayPorts/d' \
-        -e '/PermitTunnel/d' \
-        -e '/X11Forwarding/d' "$SSH_PATH"
-
-}
-
-
-# Update SSH config
-update_sshd_conf() {
-    echo 
-    yellow_msg 'Optimizing SSH...'
-    echo 
-    sleep 0.5
-
-    ## Enable TCP keep-alive messages
-    echo "TCPKeepAlive yes" | tee -a "$SSH_PATH"
-
-    ## Configure client keep-alive messages
-    echo "ClientAliveInterval 3000" | tee -a "$SSH_PATH"
-    echo "ClientAliveCountMax 100" | tee -a "$SSH_PATH"
-
-    ## Allow TCP forwarding
-    echo "AllowTcpForwarding yes" | tee -a "$SSH_PATH"
-
-    ## Enable gateway ports
-    echo "GatewayPorts yes" | tee -a "$SSH_PATH"
-
-    ## Enable tunneling
-    echo "PermitTunnel yes" | tee -a "$SSH_PATH"
-
-    ## Enable X11 graphical interface forwarding
-    echo "X11Forwarding yes" | tee -a "$SSH_PATH"
-
-    ## Restart the SSH service to apply the changes
-    sudo systemctl restart ssh
-
-    echo 
-    green_msg 'SSH is Optimized.'
-    echo 
-    sleep 0.5
-}
-
-
-# System Limits Optimizations
-limits_optimizations() {
-    echo
-    yellow_msg 'Optimizing System Limits...'
-    echo 
-    sleep 0.5
-
-    ## Clear old ulimits
-    sed -i '/ulimit -c/d' $PROF_PATH
-    sed -i '/ulimit -d/d' $PROF_PATH
-    sed -i '/ulimit -f/d' $PROF_PATH
-    sed -i '/ulimit -i/d' $PROF_PATH
-    sed -i '/ulimit -l/d' $PROF_PATH
-    sed -i '/ulimit -m/d' $PROF_PATH
-    sed -i '/ulimit -n/d' $PROF_PATH
-    sed -i '/ulimit -q/d' $PROF_PATH
-    sed -i '/ulimit -s/d' $PROF_PATH
-    sed -i '/ulimit -t/d' $PROF_PATH
-    sed -i '/ulimit -u/d' $PROF_PATH
-    sed -i '/ulimit -v/d' $PROF_PATH
-    sed -i '/ulimit -x/d' $PROF_PATH
-    sed -i '/ulimit -s/d' $PROF_PATH
-
-
-    ## Add new ulimits
-    ## The maximum size of core files created.
-    echo "ulimit -c unlimited" | tee -a $PROF_PATH
-
-    ## The maximum size of a process's data segment
-    echo "ulimit -d unlimited" | tee -a $PROF_PATH
-
-    ## The maximum size of files created by the shell (default option)
-    echo "ulimit -f unlimited" | tee -a $PROF_PATH
-
-    ## The maximum number of pending signals
-    echo "ulimit -i unlimited" | tee -a $PROF_PATH
-
-    ## The maximum size that may be locked into memory
-    echo "ulimit -l unlimited" | tee -a $PROF_PATH
-
-    ## The maximum memory size
-    echo "ulimit -m unlimited" | tee -a $PROF_PATH
-
-    ## The maximum number of open file descriptors
-    echo "ulimit -n 1048576" | tee -a $PROF_PATH
-
-    ## The maximum POSIX message queue size
-    echo "ulimit -q unlimited" | tee -a $PROF_PATH
-
-    ## The maximum stack size
-    echo "ulimit -s -H 65536" | tee -a $PROF_PATH
-    echo "ulimit -s 32768" | tee -a $PROF_PATH
-
-    ## The maximum number of seconds to be used by each process.
-    echo "ulimit -t unlimited" | tee -a $PROF_PATH
-
-    ## The maximum number of processes available to a single user
-    echo "ulimit -u unlimited" | tee -a $PROF_PATH
-
-    ## The maximum amount of virtual memory available to the process
-    echo "ulimit -v unlimited" | tee -a $PROF_PATH
-
-    ## The maximum number of file locks
-    echo "ulimit -x unlimited" | tee -a $PROF_PATH
-
-
-    echo 
-    green_msg 'System Limits are Optimized.'
-    echo 
-    sleep 0.5
-}
-
+# 
 
 # UFW Optimizations
 ufw_optimizations() {
@@ -611,11 +444,6 @@ show_menu() {
     green_msg '9  - Optimize the Network, SSH & System Limits.'
     echo 
     green_msg '10 - Optimize the Network settings.'
-    green_msg '11 - Optimize the SSH settings.'
-    green_msg '12 - Optimize the System Limits.'
-    echo 
-    green_msg '13 - Install & Optimize UFW.'
-    echo 
     red_msg 'q - Exit.'
     echo 
 }
@@ -665,27 +493,11 @@ main() {
 
             sysctl_optimizations
             sleep 0.5
-
-            remove_old_ssh_conf
-            sleep 0.5
-
-            update_sshd_conf
-            sleep 0.5
-
-            limits_optimizations
-            sleep 0.5
-
-            find_ssh_port
-            ufw_optimizations
-            sleep 0.5
-
-            echo 
-            green_msg '========================='
-            green_msg  'Done.'
-            green_msg '========================='
-
+            
             ask_reboot
+            
             ;;
+            
         4)
             complete_update
             sleep 0.5
@@ -695,19 +507,7 @@ main() {
 
             sysctl_optimizations
             sleep 0.5
-
-            remove_old_ssh_conf
-            sleep 0.5
-
-            update_sshd_conf
-            sleep 0.5
-
-            limits_optimizations
-            sleep 0.5
-
-            find_ssh_port
-            ufw_optimizations
-            sleep 0.5
+          
 
             echo 
             green_msg '========================='
@@ -724,15 +524,6 @@ main() {
             sleep 0.5
 
             sysctl_optimizations
-            sleep 0.5
-
-            remove_old_ssh_conf
-            sleep 0.5
-
-            update_sshd_conf
-            sleep 0.5
-
-            limits_optimizations
             sleep 0.5
 
             echo 
@@ -783,16 +574,7 @@ main() {
         9)
             sysctl_optimizations
             sleep 0.5
-
-            remove_old_ssh_conf
-            sleep 0.5
-
-            update_sshd_conf
-            sleep 0.5
-
-            limits_optimizations
-            sleep 0.5
-
+            
             echo 
             green_msg '========================='
             green_msg  'Done.'
@@ -802,41 +584,6 @@ main() {
             ;;
         10)
             sysctl_optimizations
-            sleep 0.5
-
-            echo 
-            green_msg '========================='
-            green_msg  'Done.'
-            green_msg '========================='
-
-            ;;
-        11)
-            remove_old_ssh_conf
-            sleep 0.5
-
-            update_sshd_conf
-            sleep 0.5
-
-            echo 
-            green_msg '========================='
-            green_msg  'Done.'
-            green_msg '========================='
-
-            ;;
-        12)
-            limits_optimizations
-            sleep 0.5
-
-            echo 
-            green_msg '========================='
-            green_msg  'Done.'
-            green_msg '========================='
-
-            ask_reboot
-            ;;
-        13)
-            find_ssh_port
-            ufw_optimizations
             sleep 0.5
 
             echo 
