@@ -543,10 +543,11 @@ find_ssh_port() {
     echo 
     yellow_msg "Finding SSH port..."
     echo 
+
     ## Check if the SSH configuration file exists
-#    if [ -e "$SSH_PATH" ]; then
+    if [ -e "$SSH_PATH" ]; then
         ## Use grep to search for the 'Port' directive in the SSH configuration file
-#        SSH_PORT=$(grep -oP '^Port\s+\K\d+' "$SSH_PATH" 2>/dev/null)
+        SSH_PORT=$(grep -oP '^Port\s+\K\d+' "$SSH_PATH" 2>/dev/null)
 
         if [ -n "$SSH_PORT" ]; then
             echo 
@@ -555,13 +556,14 @@ find_ssh_port() {
             sleep 0.5
         else
             echo 
-            green_msg "SSH port is default 22."
+            green_msg "SSH port is default 1899."
             echo 
-            SSH_PORT=22
+            SSH_PORT=1899
             sleep 0.5
         fi
+    else
         red_msg "SSH configuration file not found at $SSH_PATH"
-
+    fi
 }
 
 
@@ -576,10 +578,7 @@ remove_old_ssh_conf() {
     sleep 1
 
     ## Remove these lines
-    sed -i -e 's/#UseDNS yes/UseDNS no/' \
-        -e 's/#Compression no/Compression yes/' \
-        -e 's/Ciphers .*/Ciphers aes256-ctr,chacha20-poly1305@openssh.com/' \
-        -e '/MaxAuthTries/d' \
+    sed -i -e '/MaxAuthTries/d' \
         -e '/MaxSessions/d' \
         -e '/TCPKeepAlive/d' \
         -e '/ClientAliveInterval/d' \
@@ -587,8 +586,7 @@ remove_old_ssh_conf() {
         -e '/AllowAgentForwarding/d' \
         -e '/AllowTcpForwarding/d' \
         -e '/GatewayPorts/d' \
-        -e '/PermitTunnel/d' \
-        -e '/X11Forwarding/d' "$SSH_PATH"
+        -e '/PermitTunnel/d' "$SSH_PATH"
 
 }
 # Update SSH config
@@ -615,7 +613,7 @@ update_sshd_conf() {
     echo "PermitTunnel yes" | tee -a "$SSH_PATH"
 
     ## Enable X11 graphical interface forwarding
-    echo "X11Forwarding yes" | tee -a "$SSH_PATH"
+    #echo "X11Forwarding yes" | tee -a "$SSH_PATH"
 
     ## Restart the SSH service to apply the changes
     sudo systemctl restart ssh
@@ -1010,7 +1008,6 @@ apply_everything() {
     sleep 0.5
     
     find_ssh_port
-    ufw_optimizations
     sleep 0.5
 }
 
