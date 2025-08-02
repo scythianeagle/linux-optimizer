@@ -216,7 +216,7 @@ installations() {
     sudo apt -y install autoconf automake bash-completion build-essential git libtool make pkg-config python3 python3-pip
 
     ## Additional libraries and dependencies
-    sudo apt -y install bc binutils binutils-common binutils-x86-64-linux-gnu ubuntu-keyring jq libsodium-dev libsqlite3-dev libssl-dev packagekit qrencode socat
+    sudo apt -y install bc binutils binutils-common binutils-x86-64-linux-gnu jq libsodium-dev libsqlite3-dev libssl-dev packagekit qrencode socat
 
     ## Miscellaneous
     sudo apt -y install htop net-tools
