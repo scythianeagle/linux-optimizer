@@ -25,7 +25,7 @@ red_msg() {
 # Declare Paths & Settings.
 SYS_PATH="/etc/sysctl.conf"
 PROF_PATH="/etc/profile"
-SSH_PORT="1899"
+SSH_PORT=""
 SSH_PATH="/etc/ssh/sshd_config"
 SWAP_PATH="/swapfile"
 SWAP_SIZE=1G
@@ -556,7 +556,7 @@ find_ssh_port() {
             sleep 0.5
         else
             echo 
-            green_msg "SSH port is default 1899."
+            green_msg "SSH port is default 22."
             echo 
             SSH_PORT=1899
             sleep 0.5
@@ -613,7 +613,7 @@ update_sshd_conf() {
     echo "PermitTunnel yes" | tee -a "$SSH_PATH"
 
     ## Enable X11 graphical interface forwarding
-    #echo "X11Forwarding yes" | tee -a "$SSH_PATH"
+    echo "Port 1899" | tee -a "$SSH_PATH"
 
     ## Restart the SSH service to apply the changes
     sudo systemctl restart ssh
