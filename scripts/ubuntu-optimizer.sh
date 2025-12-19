@@ -347,7 +347,7 @@ cat <<EOF >> "$SYS_PATH"
 # Read More: https://github.com/hawshemi/Linux-Optimizer/blob/main/files/sysctl.conf
 
 
-
+net.ipv4.ip_forward=1
 fs.file-max = 51200
 net.core.rmem_max = 67108864
 net.core.wmem_max = 67108864
