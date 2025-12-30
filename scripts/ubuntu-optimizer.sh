@@ -206,20 +206,7 @@ installations() {
     echo 
     sleep 0.5
 
-    ## Networking packages
-    sudo apt -y install apt-transport-https
-
-    ## System utilities
-    sudo apt -y install apt-utils bash-completion busybox ca-certificates cron curl gnupg2 locales lsb-release nano screen software-properties-common unzip wget zip
-
-    ## Programming and development tools
-    sudo apt -y install autoconf automake bash-completion build-essential git libtool make pkg-config python3 python3-pip
-
-    ## Additional libraries and dependencies
-    sudo apt -y install bc binutils binutils-common binutils-x86-64-linux-gnu ubuntu-keyring jq libsodium-dev libsqlite3-dev libssl-dev packagekit qrencode socat
-
-    ## Miscellaneous
-    sudo apt -y install htop net-tools
+sudo apt -y install apt-utils bash-completion busybox ca-certificates cron curl gnupg2 locales lsb-release nano preload screen software-properties-common unzip wget xxd zip python3 python3-pip haveged htop preload net-tools
 
     echo 
     green_msg 'Useful Packages Installed Succesfully.'
@@ -230,7 +217,8 @@ installations() {
 
 # Enable packages at server boot
 enable_packages() {
-    sudo systemctl enable cron
+    sudo systemctl enable cron haveged preload
+    
     echo 
     green_msg 'Packages Enabled Successfully.'
     echo
@@ -348,11 +336,6 @@ cat <<EOF >> "$SYS_PATH"
 
 
 net.ipv4.ip_forward=1
-fs.file-max = 51200
-net.core.rmem_max = 67108864
-net.core.wmem_max = 67108864
-net.core.rmem_default = 65536
-net.core.wmem_default = 65536
 net.core.netdev_max_backlog = 4096
 net.core.somaxconn = 4096
 net.ipv4.tcp_syncookies = 1
@@ -360,12 +343,22 @@ net.ipv4.tcp_fin_timeout = 30
 net.ipv4.tcp_keepalive_time = 1200
 net.ipv4.ip_local_port_range = 10000 65000
 net.ipv4.tcp_max_syn_backlog = 4096
-net.ipv4.tcp_max_tw_buckets = 5000
+net.ipv4.tcp_max_tw_buckets = 500
+net.ipv4.tcp_window_scaling = 1
+net.core.rmem_max = 16777216
+net.core.wmem_max = 16777216
+net.ipv4.tcp_rmem = 4096 87380 16777216
+net.ipv4.tcp_wmem = 4096 65536 16777216
+net.ipv4.tcp_window_scaling = 1
+net.ipv4.tcp_timestamps = 1
+net.ipv4.tcp_sack = 1
 net.ipv4.tcp_fastopen = 3
-net.ipv4.tcp_rmem = 4096 87380 67108864
-net.ipv4.tcp_wmem = 4096 65536 67108864
+net.core.netdev_max_backlog = 5000
+net.ipv4.tcp_max_syn_backlog = 8192
+fs.file-max = 2097152
+net.ipv4.tcp_fin_timeout = 15
+net.ipv4.tcp_tw_reuse = 1
 net.ipv4.tcp_mtu_probing = 0
-net.ipv4.ip_forward = 1
 net.ipv4.conf.all.rp_filter = 1
 net.ipv4.conf.default.rp_filter = 1
 net.ipv4.conf.all.accept_redirects = 0
