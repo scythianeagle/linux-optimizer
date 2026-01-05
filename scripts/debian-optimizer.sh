@@ -371,9 +371,6 @@ net.ipv6.conf.all.secure_redirects = 0
 
 net.ipv4.conf.default.secure_redirects = 0
 net.ipv6.conf.default.secure_redirects = 0
-
-net.ipv6.conf.default.accept_redirects = 0
-
 net.ipv4.conf.default.send_redirects = 0
 net.ipv6.conf.default.send_redirects = 0
 
@@ -385,9 +382,7 @@ net.ipv6.conf.all.accept_source_route = 0
 
 net.ipv4.conf.default.accept_source_route = 0
 net.ipv6.conf.default.accept_source_route = 0
-
 net.ipv4.tcp_slow_start_after_idle = 0
-net.ipv6.tcp_slow_start_after_idle = 0
 
 # net.core.default_qdisc = fq
 # net.ipv4.tcp_congestion_control = bbr
