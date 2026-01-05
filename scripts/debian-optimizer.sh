@@ -355,22 +355,40 @@ net.ipv4.tcp_wmem = 4096 65536 67108864
 net.ipv4.tcp_mtu_probing = 0
 net.ipv4.ip_forward = 1
 net.ipv4.conf.all.rp_filter = 1
+net.ipv6.conf.all.rp_filter = 1
+
 net.ipv4.conf.default.rp_filter = 1
+net.ipv6.conf.default.rp_filter = 1
+
 net.ipv4.conf.all.accept_redirects = 0
-net.ipv4.conf.default.accept_redirects = 0
-net.ipv4.conf.all.secure_redirects = 0
-net.ipv4.conf.default.secure_redirects = 0
 net.ipv6.conf.all.accept_redirects = 0
+
+net.ipv4.conf.default.accept_redirects = 0
 net.ipv6.conf.default.accept_redirects = 0
+
+net.ipv4.conf.all.secure_redirects = 0
+net.ipv6.conf.all.secure_redirects = 0
+
+net.ipv4.conf.default.secure_redirects = 0
+net.ipv6.conf.default.secure_redirects = 0
+
+net.ipv6.conf.default.accept_redirects = 0
+
 net.ipv4.conf.default.send_redirects = 0
+net.ipv6.conf.default.send_redirects = 0
+
 net.ipv4.icmp_echo_ignore_all = 1
+net.ipv6.icmp_echo_ignore_all = 1
+
 net.ipv4.conf.all.accept_source_route = 0
-net.ipv4.conf.default.accept_source_route = 0
 net.ipv6.conf.all.accept_source_route = 0
+
+net.ipv4.conf.default.accept_source_route = 0
 net.ipv6.conf.default.accept_source_route = 0
-net.ipv6.conf.all.accept_ra = 0
-net.ipv6.conf.default.accept_ra = 0
+
 net.ipv4.tcp_slow_start_after_idle = 0
+net.ipv6.tcp_slow_start_after_idle = 0
+
 # net.core.default_qdisc = fq
 # net.ipv4.tcp_congestion_control = bbr
 net.ipv4.tcp_window_scaling = 1
