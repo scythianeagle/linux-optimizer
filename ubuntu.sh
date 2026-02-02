@@ -1,3 +1,4 @@
+
 #!/bin/bash
 # https://github.com/hawshemi/Linux-Optimizer
 
